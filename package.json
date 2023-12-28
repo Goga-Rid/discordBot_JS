@@ -1,0 +1,19 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node bot.js",
+    "build": "node deploy-commands.js"
+  },
+  "author": "Goga_rid",
+  "license": "ISC",
+  "description": "This bot performs useful functions for your discord server. In the future it will be updated with commands :3",
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  }
+}
