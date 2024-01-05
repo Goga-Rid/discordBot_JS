@@ -7,7 +7,19 @@ const commandFolders = fs.readdirSync(foldersPath);
 let token = process.env.TOKEN; // Вытаскиваем токен
 
 // Создание бота и сборщика слэш команд
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const client = new Client({
+	 allowedMentions: {
+		parse: ['users', 'roles'],
+		repliedUser: true,
+	},
+	intents: [
+		GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+	], 
+});
+
 client.commands = new Collection();
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
@@ -44,6 +56,31 @@ client.on(Events.InteractionCreate, async interaction => {
 			await interaction.reply({ content: 'При выполнении этой команды произошла ошибка!', ephemeral: true });
 		}
 	}
+});
+
+// Автоматическое получение приветствия и роли
+client.on(Events.GuildMemberAdd, async member => {
+    // Получение роли, которую нужно выдать новому участнику
+    const roleId = '1189672884692603001';
+    const role = member.guild.roles.cache.get(roleId);
+
+	console.log(member.roles)
+    // Проверка наличия роли и выдача ее участнику
+    if (role) {
+		await member.roles.add(role);
+    } else {
+        console.error(`[ERROR] Роль с ID ${roleId} не найдена.`);
+    }
+
+    // Отправка приветственного сообщения в начальный текстовый канал
+    const welcomeChannelId = '1098531439382904854';
+    const welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
+
+    if (welcomeChannel) {
+        welcomeChannel.send(`**Хтьфу, здарова пон, ${member.user.globalName}!** \n Теперь ты ${role}.`);
+    } else {
+        console.error(`[ERROR] Канал с ID ${welcomeChannelId} не найден.`);
+    }
 });
 
 // регистрация бота по токену

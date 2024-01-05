@@ -5,6 +5,6 @@ lint:
 fix:
 	npx eslint . --fix
 start:
-	node bot.js
+	nodemon bot.js
 command:
 	node deploy-commands.js
