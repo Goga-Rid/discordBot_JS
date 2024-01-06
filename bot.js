@@ -81,7 +81,7 @@ client.on(Events.GuildMemberAdd, async member => {
 		image: {
 			url: gifUrl,
 		},
-		title: `**Хтьфу, здарова пон, ${member.user.globalName}!**`,
+		title: `**Хтьфу, здарова пон, ${member.user.username}!**`,
 		description: `Теперь ты ${role}.`,
 	};
 	const embedData = EmbedBuilder.from(newAPIEmbed);
