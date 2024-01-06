@@ -1,7 +1,7 @@
 require("dotenv").config()
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 let token = process.env.TOKEN; // Вытаскиваем токен
@@ -59,12 +59,12 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // Автоматическое получение приветствия и роли
-client.on(Events.GuildMemberAdd, async member => {
+client.on(Events.GuildMemberAdd, async member => { 
+	
     // Получение роли, которую нужно выдать новому участнику
     const roleId = '1189672884692603001';
     const role = member.guild.roles.cache.get(roleId);
 
-	console.log(member.roles)
     // Проверка наличия роли и выдача ее участнику
     if (role) {
 		await member.roles.add(role);
@@ -75,9 +75,19 @@ client.on(Events.GuildMemberAdd, async member => {
     // Отправка приветственного сообщения в начальный текстовый канал
     const welcomeChannelId = '1098531439382904854';
     const welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
+	const gifUrl = 'https://c.tenor.com/X_OSpAg-JzgAAAAd/tenor.gif';
+	const newAPIEmbed = {
+		color: 0x90EE90,
+		image: {
+			url: gifUrl,
+		},
+		title: `**Хтьфу, здарова пон, ${member.user.globalName}!**`,
+		description: `Теперь ты ${role}.`,
+	};
+	const embedData = EmbedBuilder.from(newAPIEmbed);
 
     if (welcomeChannel) {
-        welcomeChannel.send(`**Хтьфу, здарова пон, ${member.user.globalName}!** \n Теперь ты ${role}.`);
+        welcomeChannel.send({ embeds: [embedData]});
     } else {
         console.error(`[ERROR] Канал с ID ${welcomeChannelId} не найден.`);
     }
