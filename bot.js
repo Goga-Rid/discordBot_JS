@@ -1,14 +1,17 @@
-require("dotenv").config()
+require("dotenv").config();
 const fs = require('node:fs');
 const path = require('node:path');
+const mongoose = require('mongoose');
 const { Client, Collection, Events, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const messageCounter = require('./models/messageCounterModel.js'); // Подключаем модели счетчика сообщений
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
-let token = process.env.TOKEN; // Вытаскиваем токен
+const token = process.env.TOKEN; // Вытаскиваем токен
+const mongoURL = process.env.MONGOURL; // Вытаскиваем юрл для подключения к БД
 
 // Создание бота и сборщика слэш команд
 const client = new Client({
-	 allowedMentions: {
+	allowedMentions: {
 		parse: ['users', 'roles'],
 		repliedUser: true,
 	},
@@ -20,6 +23,13 @@ const client = new Client({
 	], 
 });
 
+// Подключение к БД
+mongoose.connect(mongoURL, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+  });
+
+// Парсинг команд с директории где лежат команды
 client.commands = new Collection();
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
@@ -91,6 +101,61 @@ client.on(Events.GuildMemberAdd, async member => {
     } else {
         console.error(`[ERROR] Канал с ID ${welcomeChannelId} не найден.`);
     }
+});
+
+// Добавление роли при достижении определенного кол-ва сообщений
+client.on(Events.MessageCreate, async (message) => {
+
+	// Проверяем, что сообщение пришло из гильдии (сервера)
+	if (!message.guild) return;
+  
+	// Проверяем, что автор сообщения не является ботом
+	if (message.author.bot) return;
+  
+	// Получаем ID роли из списка, которую нужно выдавать
+	const roleMap = {
+		'1197916464053768232': 15, // Здесь роли и количество сообщений для этой роли
+		'1197916457032482847': 25,
+		'1197916460731863082': 50,
+		'1197915712421900358': 75,
+		'1197916466931044383': 100,
+	};
+
+	for (const [roleId, requiredMessageCount] of Object.entries(roleMap)) {
+		const roleToGive = message.guild.roles.cache.get(roleId);
+	
+  
+	// Проверяем наличие роли
+	if (!roleToGive) {
+	console.error(`[ERROR] Роль с ID ${roleId} не найдена.`);
+	continue;// Пропускаем текущую итерацию, если роль не найдена;
+	}
+  
+	// Получаем ID участника
+	const memberId = message.author.id;
+  
+	// Находим или создаем запись для участника и роли в базе данных
+	let counter = await messageCounter.findOne({ userId: memberId, roleId });
+    if (!counter) {
+      counter = await messageCounter.create({ userId: memberId, roleId });
+    }
+
+	
+    // Увеличиваем счетчик сообщений для участника и роли
+    counter.messageCount+=1;
+    await counter.save();
+
+    // Проверяем, достиг ли участник необходимого количества сообщений для данной роли
+    if (counter.messageCount === requiredMessageCount) {
+      // Выдаем роль участнику
+      try {
+        await message.member.roles.add(roleToGive);
+        message.reply(`Поздравляю! Вы получили роль ${roleToGive.name} за ${requiredMessageCount} сообщений.`);
+      } catch (error) {
+        console.error(`[ERROR] Ошибка при выдаче роли: ${error}`);
+      }
+    }
+  }
 });
 
 // регистрация бота по токену
