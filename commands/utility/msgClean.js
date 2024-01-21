@@ -15,7 +15,7 @@ module.exports = {
 
     const amount = interaction.options.getInteger('amount');
 
-    if (amount < 1 || amount > 100) {
+    if (amount <= 1 || amount > 100) {
       return interaction.reply({ content: 'Вы можете удалить от 1 до 99 сообщений за раз', ephemeral: true }).then((msg) => {
         setTimeout(() => {
           msg.delete();
