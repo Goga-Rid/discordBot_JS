@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const messageCounterSchema = mongoose.Schema({
   userId: String,
-  roleId: { type: String, default: '1098531439382904854'},
+  roleId: { type: String, default: '1098531439382904854' },
   messageCount: { type: Number, default: 0 },
 });
 

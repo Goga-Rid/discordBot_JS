@@ -1,7 +1,7 @@
 {
   "name": "discordbot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
     "build": "node deploy-commands.js"
@@ -11,6 +11,8 @@
   "description": "This bot performs useful functions for your discord server. In the future it will be updated with commands :3",
   "devDependencies": {
     "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
     "nodemon": "^3.0.2"
   },
   "dependencies": {

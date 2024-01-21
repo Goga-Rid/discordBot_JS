@@ -1,7 +1,18 @@
 env:
   node: true
-extends: eslint:recommended
+  commonjs: true
+  es2021: true
+
+extends:
+  - airbnb-base
+
 parserOptions:
-  ecmaVersion: latest
-  sourceType: module
-rules: {}
+  ecmaVersion: 12
+
+rules:
+  no-console: off
+  import/extensions:
+    - error
+    - always
+  import/no-dynamic-require: off
+  global-require: off
