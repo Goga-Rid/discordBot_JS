@@ -14,5 +14,6 @@ rules:
   import/extensions:
     - error
     - always
+    - ignorePackages: true
   import/no-dynamic-require: off
   global-require: off

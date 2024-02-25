@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
-const messageCounterSchema = mongoose.Schema({
-  userId: String,
-  roleId: { type: String, default: '1098531439382904854' },
-  messageCount: { type: Number, default: 0 },
+const messageCounterSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  roleId: { type: String, required: true },
+  messageCount: { type: Number, default: 0 }, // Добавляем дефолтное значение для счетчика сообщений
 });
 
-const MessageCounter = mongoose.model('MessageCounter', messageCounterSchema);
+const MessageCounterModel = mongoose.model('MessageCounter', messageCounterSchema);
 
-module.exports = MessageCounter;
+module.exports = MessageCounterModel;
