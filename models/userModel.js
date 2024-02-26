@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  messageCount: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const UserModel = mongoose.model('User', userSchema);

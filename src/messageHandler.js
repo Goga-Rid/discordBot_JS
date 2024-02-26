@@ -1,25 +1,30 @@
-const { updateMessageCounter } = require('../controllers/messageController.js');
+const UserModel = require('../models/userModel.js');
+const RoleModel = require('../models/roleModel.js');
 
-const processMessage = async (message, roleId, requiredMessageCount) => {
-  const roleToGive = message.guild.roles.cache.get(roleId);
-
-  if (!roleToGive) {
-    console.error(`[ERROR] Роль с ID ${roleId} не найдена.`);
-    return;
-  }
-
-  const memberId = message.author.id;
+async function handleMessage(message) {
+  if (!message.guild || message.author.bot) return;
 
   try {
-    const counter = await updateMessageCounter(memberId, roleId);
+    const user = await UserModel.findOne({ userId: message.author.id });
+    if (user) {
+      user.messageCount += 1;
+      await user.save();
 
-    if (counter.messageCount === requiredMessageCount) {
-      await message.member.roles.add(roleToGive);
-      message.reply(`Поздравляю! Вы получили роль ${roleToGive.name} за ${requiredMessageCount} сообщений.`);
+      // Получаем все роли из базы данных
+      const roles = await RoleModel.find();
+      const promises = roles.map(async (roleInfo) => {
+        if (user.messageCount === roleInfo.requiredMessageCount) {
+          await message.member.roles.add(roleInfo.roleId);
+          message.reply(`Поздравляю! Вы получили роль ${roleInfo.roleName} за ${roleInfo.requiredMessageCount} сообщений.`);
+        }
+      });
+
+      // Ждем выполнения всех промисов
+      await Promise.all(promises);
     }
   } catch (error) {
-    console.error('[ERROR] Ошибка при обработке сообщения:', error);
+    console.error('Ошибка при обновлении счетчика сообщений пользователя:', error);
   }
-};
+}
 
-module.exports = { processMessage };
+module.exports = { handleMessage };

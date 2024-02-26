@@ -4,9 +4,8 @@ const {
   Client, Collection, Events, GatewayIntentBits,
 } = require('discord.js');
 const { loadCommands } = require('./src/commandLoader.js'); // парсер комманд
-const { processMessage } = require('./src/messageHandler.js'); // отслеживатель сообщений и выдаватель ролей
-const { greetNewMember } = require('./src/greetHandler.js');
-const RoleModel = require('./models/roleModel.js'); // Подключаем модели ролей
+const { handleMessage } = require('./src/messageHandler.js'); // отслеживатель сообщений (увеличение счетчика сообщений) и выдаватель ролей
+const { greetNewMember } = require('./src/greetHandler.js'); // обработчик приветсвтвия нового пользователя
 const { connectDatabase, initializeModels } = require('./src/db.js'); // Подключаем модуль для работы с базой данных
 const { loadServerRoles } = require('./controllers/roleController.js'); // Контроллер для загрузки ролей сервера
 const { loadServerGM, addNewUser } = require('./controllers/userController.js'); // Контроллер для загрузки пользователей сервера
@@ -71,16 +70,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
 
 // Добавление роли при достижении определенного кол-ва сообщений
 client.on(Events.MessageCreate, async (message) => {
-  if (!message.guild || message.author.bot) return;
-
-  try {
-    const roles = await RoleModel.find({});
-    roles.forEach(async (role) => {
-      await processMessage(message, role.roleId, role.requiredMessageCount);
-    });
-  } catch (error) {
-    console.error('Ошибка при получении ролей из базы данных:', error);
-  }
+  handleMessage(message);
 });
 
 // Парсинг ролей при запуске бота и запись бд с самоочисткой

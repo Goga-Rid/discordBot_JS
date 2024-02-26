@@ -11,7 +11,6 @@ async function connectDatabase() {
 }
 
 function initializeModels() {
-  require('../models/messageCounterModel.js');
   require('../models/roleModel.js');
   require('../models/userModel.js');
 }
