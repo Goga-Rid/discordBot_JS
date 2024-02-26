@@ -17,6 +17,6 @@ jobs:
 
     - name: Deploy changes
       run: |
-        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'cd discordBot_JS && git pull origin main'
+        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'cd discordBot_JS && git pull origin main && node deploy-commands.js && node bot.js'
       env:
-        SSH_AUTH_SOCK: ${{ secrets.SSH_AUTH_SOCK }}  # Передаем сокет для аутентификации SSH
+        SSH_AUTH_SOCK: ${{ secrets.SSH_AUTH_SOCK }}
