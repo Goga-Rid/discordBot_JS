@@ -20,4 +20,4 @@ jobs:
           git pull origin main  # Подтягиваем изменения с главной ветки
           touch .env
           echo "${{ secrets.ENV_FILE_CONTENTS }}" > .env
-          bash ../deploy.sh
+          # bash ../deploy.sh
