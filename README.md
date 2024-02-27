@@ -1,4 +1,4 @@
-[![Deploy to Remote Server](https://github.com/Goga-Rid/discordBot_JS/actions/workflows/deploy.yml/badge.svg?event=deployment)](https://github.com/Goga-Rid/discordBot_JS/actions/workflows/deploy.yml)
+[![Deploy to Remote Server](https://github.com/Goga-Rid/discordBot_JS/actions/workflows/deploy.yml/badge.svg)](https://github.com/Goga-Rid/discordBot_JS/actions/workflows/deploy.yml)
 # This bot performs useful functions for your discord server.
 * It is written in node js, which is quite surprising for many people. It will be updated with commands in the future :3
 
