@@ -2,21 +2,22 @@ name: Deploy to Remote Server
 on:
   push:
     branches:
-      - main
+      - main 
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2 
-
-    - name: Install SSH client
-      run: sudo apt-get install openssh-client -y
-
-    - name: Deploy changes
-      run: |
-        ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} 'cd discordBot_JS && git pull origin main && node deploy-commands.js && node bot.js'
-      env:
-        SSH_AUTH_SOCK: ${{ secrets.SSH_AUTH_SOCK }}
+    - name: SSH and deploy
+      uses: appleboy/ssh-action@v1.0.3  
+      with:
+        host: ${{ secrets.SERVER_HOST }}  
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          cd ~/discordBot_JS  # Переходим в директорию проекта 
+          git pull origin main  # Подтягиваем изменения с главной ветки
+          touch .env
+          echo "${{ secrets.ENV_FILE_CONTENTS }}" > .env
+          bash ../deploy.sh
