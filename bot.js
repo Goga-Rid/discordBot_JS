@@ -6,9 +6,10 @@ const {
 const { loadCommands } = require('./src/commandLoader.js'); // парсер комманд
 const { handleMessage } = require('./src/messageHandler.js'); // отслеживатель сообщений (увеличение счетчика сообщений) и выдаватель ролей
 const { greetNewMember } = require('./src/greetHandler.js'); // обработчик приветсвтвия нового пользователя
+const { farewellMember } = require('./src/farewellHandler.js'); // обработчик прощания с пользователем
 const { connectDatabase, initializeModels } = require('./src/db.js'); // Подключаем модуль для работы с базой данных
 const { loadServerRoles } = require('./controllers/roleController.js'); // Контроллер для загрузки ролей сервера
-const { loadServerGM, addNewUser } = require('./controllers/userController.js'); // Контроллер для загрузки пользователей сервера
+const { loadServerGM, removeUser, addNewUser } = require('./controllers/userController.js'); // Контроллер для загрузки пользователей сервера
 
 const foldersPath = path.join(__dirname, 'commands');
 const token = process.env.TOKEN; // Вытаскиваем токен
@@ -62,9 +63,18 @@ client.on(Events.GuildMemberAdd, async (member) => {
     // Добавление информации о новом участнике в базу данных
     await greetNewMember(member);
     await addNewUser(member);
-    console.log(`Пользователь ${member.user.username} (${member.user.id}) был добавлен в базу данных.`);
   } catch (error) {
     console.error('Ошибка при добавлении пользователя в базу данных:', error);
+  }
+});
+
+// Автоматическое прощание с пользователем
+client.on(Events.GuildMemberRemove, async (member) => {
+  try {
+    await farewellMember(member);
+    await removeUser(member);
+  } catch (error) {
+    console.error('Ошибка при удалении пользователя из базы данных:', error);
   }
 });
 
