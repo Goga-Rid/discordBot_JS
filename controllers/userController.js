@@ -26,13 +26,13 @@ async function loadServerGM(client) {
   try {
     const userData = await parseDiscordUsers(client); // Получение данных о пользователях
     await Promise.all(userData.map(async (user) => {
-      try {
-        await UserModel.updateOne({ userId: user.userId }, { $set: user }, { upsert: true });
-      } catch (error) {
-        console.error(`Ошибка при обновлении пользователя ${user.userName} (${user.userId}) в базе данных:`, error);
+      const existingUser = await UserModel.findOne({ userId: user.userId });
+      if (!existingUser) {
+        await addNewUser(user);
       }
     }));
-    console.log('Все участники сервера были добавлены в БД');
+
+    console.log('Проверка и добавление новых пользователей завершено.');
   } catch (error) {
     console.error('Возникла ошибка при добавлении участников сервера в базу данных:', error);
   }
