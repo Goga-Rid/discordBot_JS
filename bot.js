@@ -32,7 +32,7 @@ const client = new Client({
 connectDatabase();
 initializeModels();
 
-// Парсинг команд с директории где лежат команды
+// Парсинг команд с директории где лежат команды 
 client.commands = new Collection();
 loadCommands(client, foldersPath);
 
