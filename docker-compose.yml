@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    image: gogarid/bot_discord_js:latest
+    env_file:
+      - .env
+    command: npm start

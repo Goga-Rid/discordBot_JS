@@ -1,0 +1,15 @@
+FROM node:18
+
+WORKDIR /
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+COPY .env /
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
